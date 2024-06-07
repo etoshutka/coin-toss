@@ -1,0 +1,36 @@
+global int init?;
+
+global int global::available_balance;
+global int global::service_balance;
+global slice global::admin_addr;
+global int global::last_number;
+global int global::hash;
+
+
+() init_data() impure {
+    ifnot(null?(init?)) {
+        throw(0x123);
+    }
+
+    slice ds = get_data().begin_parse();
+
+    global::available_balance = ds~load_coins();
+    global::service_balance = ds~load_coins();
+    global::admin_addr = ds~load_msg_addr();
+    global::last_number = ds~load_uint(64);
+    global::hash = slice_empty?(ds) ? 0 : ds~load_uint(256);
+
+    init? = true;
+}
+
+() pack_data() impure {
+    set_data(
+        begin_cell()
+        .store_coins(global::available_balance)
+        .store_coins(global::service_balance)
+        .store_slice(global::admin_addr)
+        .store_uint(global::last_number, 64)
+        .store_uint(global::hash, 256)
+        .end_cell()
+    );
+}

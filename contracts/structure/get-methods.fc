@@ -1,0 +1,13 @@
+#include "admin.fc";
+#include "get-methods.fc";
+#include "msg.fc";
+#include "op-codes.fc";
+#include "storage.fc";
+#include "admin.fc";
+#include "stdlib.fc";
+
+(int, int, slice, int, int) get_info() method_id {
+    init_data();
+    return(global::available_balance, global::service_balance, global::admin_addr, global::last_number, global::hash);
+}
+

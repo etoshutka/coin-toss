@@ -1,0 +1,48 @@
+#include "structure/stdlib.fc";
+#include "structure/admin.fc";
+#include "structure/game.fc";
+#include "structure/get-methods.fc";
+#include "structure/msg.fc";
+#include "structure/op-codes.fc";
+#include "structure/storage.fc";
+
+
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    slice cs = in_msg_full.begin_parse();
+    int hash = slice_hash(cs);
+    throw_if(0, c~load_uint(4) & 1);
+
+    init_data();
+
+    slice sender_address = cs~load_msg_addr();
+
+    if (in_msg_body.slice_empty?()){
+        start(sender_address, msg_value, hash);
+        pack_data();
+        throw(0);
+    }
+
+    int op = in_msg_body~load_uint(32);
+    int admin_address = equal_slices(sender_address, global::admin_addr);
+
+    if (op == op::add_balance()) {
+        global::available_balance += msg_value;
+        pack_data();
+        throw(0);
+    }
+
+    if (op == op::maintain) {
+        throw_if(505, admin_address = 0);
+        adm::maintain(in_msg_body);
+        throw(0);
+    }
+
+    if (op == op::withdraw) {
+        throw_if(506, admin_address = 0);
+        adm::withdraw();
+        pack_data();
+        throw(0);
+    }
+
+    throw(0xffff);
+}
