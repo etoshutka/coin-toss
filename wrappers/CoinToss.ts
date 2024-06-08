@@ -1,14 +1,29 @@
-import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from '@ton/core';
+import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode, Slice, toNano } from '@ton/core';
 
 export type CoinTossConfig = {
-    owner: Address;
+    available_balance : bigint;
+    service_balance: bigint;
+    admin_addr: Address;
+    last_number: bigint;
+    hash: bigint;
 };
 
 export function coinTossConfigToCell(config: CoinTossConfig): Cell {
-    return beginCell().storeAddress(config.owner).endCell();
+    return (
+        beginCell()
+            .storeCoins(config.available_balance)
+            .storeCoins(config.service_balance)
+            .storeAddress(config.admin_addr)
+            .storeUint(config.last_number, 64)
+            .storeUint(config.hash, 256)
+        .endCell()
+    );
 }
 
 export class CoinToss implements Contract {
+    static getInfo(): any {
+        throw new Error('Method not implemented.');
+    }
     constructor(readonly address: Address, readonly init?: { code: Cell; data: Cell }) {}
 
     static createFromAddress(address: Address) {
@@ -28,5 +43,55 @@ export class CoinToss implements Contract {
             body: beginCell().endCell(),
         });
     }
+    async sendAddBalance(provider:ContractProvider, via: Sender, value: bigint) {
+        await provider.internal(via, {
+            value,
+            sendMode: SendMode.PAY_GAS_SEPARATELY,
+            body:
+                beginCell()
+                    .storeUint(0x567, 32)
+                .endCell(),
+        });
+    }
 
+    async sendWithdraw(provider:ContractProvider, via: Sender, value: bigint) {
+        await provider.internal(via, {
+            value: value,
+            sendMode: SendMode.PAY_GAS_SEPARATELY,
+            body:
+            beginCell()
+                .storeUint(0x700, 32)
+                .storeCoins(toNano("1"))
+            .endCell(),
+        });
+    }
+
+    static changeSendMode() {
+        return beginCell().storeUint(0x555, 32).endCell();
+    } // ???
+
+    // ДОДЕЛАТЬ! 
+    async sendMaintain(provider:ContractProvider, via:Sender) {
+        await provider.internal(via, {
+            sendMode: SendMode.PAY_GAS_SEPARATELY,
+            body: CoinToss.changeSendMode(),
+            value: toNano('0.1')
+        });
+    } 
+    // ДОДЕЛАТЬ !
+    async getInfo(provider: ContractProvider): Promise<[bigint,bigint,Address,bigint,bigint]> {
+        const res = await provider.get('get_info', []);
+
+        let data: [bigint,bigint,Address,bigint,bigint]
+        data = [
+        res.stack.readBigNumber(),
+        res.stack.readBigNumber(),
+        res.stack.readAddress(),
+        res.stack.readBigNumber(),
+        res.stack.readBigNumber()
+        ]
+    
+        return data;
+    
+    }
 }

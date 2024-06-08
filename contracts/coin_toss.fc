@@ -10,7 +10,7 @@
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     slice cs = in_msg_full.begin_parse();
     int hash = slice_hash(cs);
-    throw_if(0, c~load_uint(4) & 1);
+    throw_if(0, cs~load_uint(4) & 1);
 
     init_data();
 
@@ -25,7 +25,7 @@
     int op = in_msg_body~load_uint(32);
     int admin_address = equal_slices(sender_address, global::admin_addr);
 
-    if (op == op::add_balance()) {
+    if (op == op::add_balance) {
         global::available_balance += msg_value;
         pack_data();
         throw(0);

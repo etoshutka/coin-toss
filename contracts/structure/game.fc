@@ -36,7 +36,7 @@
     randomize(new_hash);
     global::hash = new_hash;
 
-    int number = rand(10000) ;; [0, 10000]
+    int number = rand(10000); ;; [0, 10000]
     global::last_number = number;
     global::available_balance += oneton();
 

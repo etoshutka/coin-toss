@@ -1,6 +1,6 @@
-int op::maintain() asm "1001 PUSHINT";
-int op::withdraw() asm "1002 PUSHINT";
-int op::add_balance() asm "1003 PUSHINT";
+const int op::add_balance = 0x567;
+const int op::maintain = 0x555;
+const int op::withdraw = 0x700;
 
 int exit::invalid_bet() asm "2001 PUSHINT";
 
