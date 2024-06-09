@@ -1,26 +1,12 @@
 # ton-coin-toss
 
-## Project structure
+## Explanation of the work of the smart-contract
+This smart contract have a well-thought-out coin tossing logic with an unpredictable result.
 
--   `contracts` - source code of all the smart contracts of the project and their dependencies.
--   `wrappers` - wrapper classes (implementing `Contract` from ton-core) for the contracts, including any [de]serialization primitives and compilation functions.
--   `tests` - tests for the contracts.
--   `scripts` - scripts used by the project, mainly the deployment scripts.
+Sending a transaction to contract(1 TON) allows you to win 2, 10 or 0 TON :)
 
-## How to use
+Admin op codes are provided with the withdrawal of the commission, the addition of the balance and the transfer of the entire balance of the contract.
 
-### Build
+## Test's
 
-`npx blueprint build` or `yarn blueprint build`
-
-### Test
-
-`npx blueprint test` or `yarn blueprint test`
-
-### Deploy or run another script
-
-`npx blueprint run` or `yarn blueprint run`
-
-### Add a new contract
-
-`npx blueprint create ContractName` or `yarn blueprint create ContractName`
+Tested in testnet, TS tests will be soon...
