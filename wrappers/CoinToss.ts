@@ -70,7 +70,7 @@ export class CoinToss implements Contract {
         return beginCell().storeUint(0x555, 32).endCell();
     } // ???
 
-    // ДОДЕЛАТЬ! 
+  
     async sendMaintain(provider:ContractProvider, via:Sender) {
         await provider.internal(via, {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
@@ -78,7 +78,7 @@ export class CoinToss implements Contract {
             value: toNano('0.1')
         });
     } 
-    // ДОДЕЛАТЬ !
+  
     async getInfo(provider: ContractProvider): Promise<[bigint,bigint,Address,bigint,bigint]> {
         const res = await provider.get('get_info', []);
 
