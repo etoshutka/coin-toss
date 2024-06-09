@@ -66,16 +66,24 @@ export class CoinToss implements Contract {
         });
     }
 
-    static changeSendMode() {
-        return beginCell().storeUint(0x555, 32).endCell();
-    } // ???
-
     // ДОДЕЛАТЬ! 
-    async sendMaintain(provider:ContractProvider, via:Sender) {
+    async sendMaintain(provider:ContractProvider, via:Sender, address: Address) {
         await provider.internal(via, {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
-            body: CoinToss.changeSendMode(),
-            value: toNano('0.1')
+            value: toNano("0.1"),
+            body: 
+                beginCell()
+                    .storeUint(0x555, 32)
+                    .storeUint(128, 8)
+                    .storeRef(
+                        beginCell()
+                            .storeUint(0x18, 6)
+                            .storeAddress(address)
+                            .storeCoins(0)
+                            .storeUint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+                        .endCell()
+                    )
+                .endCell()
         });
     } 
     // ДОДЕЛАТЬ !
